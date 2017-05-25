@@ -213,27 +213,86 @@ public class Informacion_IPv4 {
         texto += tipo + "\n\tCódigo: ";
         int codigo = paq.getUByte(35);
         texto += codigo + " (";
-        /* Se asume que es sólo código 3. Preguntar si se pone todo el RFC 792*/
-        switch(codigo) {
-            case 0: texto += "Red inaccesible)\n"; break;
-            case 1: texto += "Host inaccesible)\n"; break;
-            case 2: texto += "Protocolo inaccesible)\n"; break;
-            case 3: texto += "Puerto inaccesible)\n"; break;
-            case 4: texto += "DF activado)\n"; break;
-            case 5: texto += "Fallo ruta origen)\n"; break;
-            default: texto += "Desconocido)\n"; break;
-            
-        }
-        texto += "\tChecksum ICMP: 0x";
+        String auxCode = "";
+        
+        switch(tipo) {
+            case 0: auxCode = code0and8ICMP(); break;
+            case 3: auxCode = code3ICMP(codigo); break;  
+            case 8: auxCode = code0and8ICMP(); break;
+            case 11: auxCode = code11ICMP(codigo); break;
+        }        
+        texto += auxCode + "\n\tChecksum ICMP: 0x";
         int icmp_checksum = (paq.getUByte(36) * 256) + paq.getUByte(37);
         aux = Integer.toHexString(icmp_checksum);
         if(aux.length() < 4) {
             int tmp = 4 - aux.length();
             for(int i = 0 ; i < tmp ; i++) {aux = '0' + aux;}
         }
-        texto += aux + "\n\tSin Uso: 00000000";
-        /* Sin uso: Byte 38-41 */
-                
+        texto += aux + "\n";
+        switch(tipo) {
+            case 0: auxCode = code0and8ICMP(paq); break;
+            case 3: auxCode = "\tSin Uso: 0x0000"; break;
+            case 8: auxCode = code0and8ICMP(paq); break;
+            case 11: auxCode = "\tSin Uso: 0x0000"; break;
+        }                
+        
+        texto += auxCode;
+        return texto;
+    }
+    
+    private String code0and8ICMP() {
+        String texto = ")";        
+        return texto;
+    }
+    
+    private String code0and8ICMP(JPacket paq) { // 38
+        String texto = "\tIdentificador: ", aux;
+        int identificador = (paq.getUByte(38) * 256) + paq.getUByte(39);
+        texto += identificador + " (0x";
+        aux = Integer.toHexString(identificador);
+        if(aux.length() < 4) {
+            int tmp = 4 - aux.length();
+            for(int i = 0 ; i < tmp ; i++) {aux = '0' + aux;}
+        }
+        texto += aux + ")\n\tNumero de Secuencia: ";
+        int seqNum = (paq.getUByte(40) * 256) + paq.getUByte(41);
+        aux = Integer.toHexString(seqNum);
+        if(aux.length() < 4) {
+            int tmp = 4 - aux.length();
+            for(int i = 0 ; i < tmp ; i++) {aux = '0' + aux;}
+        }
+        texto += seqNum + " (0x" + aux + ")";
+        texto += "\n\tDatos: \n\t"; aux = "";
+        for(int i = 0; i < 32; i++) {
+            aux += Integer.toHexString(paq.getUByte(42 + i));
+        }
+        texto += aux;
+        
+        
+        return texto;
+    }
+    private String code3ICMP(int codigo) {
+        String texto = "";
+        switch(codigo) {
+            case 0: texto += "Red inaccesible)"; break;
+            case 1: texto += "Host inaccesible)"; break;
+            case 2: texto += "Protocolo inaccesible)"; break;
+            case 3: texto += "Puerto inaccesible)"; break;
+            case 4: texto += "DF activado)"; break;
+            case 5: texto += "Fallo ruta origen)"; break;
+            default: texto += "Desconocido)"; break;            
+        }
+        
+        return texto;
+    }    
+    
+    private String code11ICMP(int codigo) {
+        String texto = "";
+        if(codigo == 0) {
+            texto += "TTL excedido en tránsito";
+        } else {
+            texto += "Tiempo de reensamblado excedido";
+        }
         return texto;
     }
     
