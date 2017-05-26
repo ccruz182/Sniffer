@@ -123,15 +123,15 @@ public class Analisis_Archivo extends javax.swing.JFrame {
         //tableTramas.getColumnModel().getColumn(4).setMaxWidth(120);                 
     }
 
-    private void mostrarInfo(){
-        int fila_selec = tableTramas.getSelectedRow();
-       JPacket pakete = paq.get(fila_selec);
+    private void mostrarInfo(int offset){
+        int fila_selec = tableTramas.getSelectedRow();        
+        JPacket pakete = paq.get(fila_selec + offset);
        Trama paquete;
        String texto = "";
        String type = "Unknown";
        if(fila_selec != -1) {
            areaInformacion.setVisible(true);
-           paquete = paquetes.get(fila_selec);
+           paquete = paquetes.get(fila_selec + offset);
            if(paquete.getTipo() > 1500) {
                /* ETHERNET */
                texto = texto + "ETHERNET\n";
@@ -289,7 +289,7 @@ public class Analisis_Archivo extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableTramasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableTramasMousePressed
-       mostrarInfo();
+       mostrarInfo(0);
     }//GEN-LAST:event_tableTramasMousePressed
 
     
@@ -313,8 +313,10 @@ public class Analisis_Archivo extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEstadisticaActionPerformed
 
     private void tableTramasKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableTramasKeyPressed
-        if(evt.getKeyCode()==KeyEvent.VK_DOWN || evt.getKeyCode()==KeyEvent.VK_UP){
-            mostrarInfo();
+        if(evt.getKeyCode()==KeyEvent.VK_DOWN){
+            mostrarInfo(1);
+        } else if( evt.getKeyCode()==KeyEvent.VK_UP) {
+            mostrarInfo(-1);
         }
     }//GEN-LAST:event_tableTramasKeyPressed
 

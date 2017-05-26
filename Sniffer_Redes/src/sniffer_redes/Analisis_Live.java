@@ -62,7 +62,7 @@ public class Analisis_Live extends javax.swing.JFrame {
         }  
         //System.out.println("Enter the device: ");
         //int a = entrada.nextInt();
-        PcapIf device = alldevs.get(0); // We know we have atleast 1 device  
+        PcapIf device = alldevs.get(1); // We know we have atleast 1 device  
         /*System.out  
             .printf("\nChoosing '%s' on your behalf:\n",  
                 (device.getDescription() != null) ? device.getDescription()  
@@ -142,9 +142,9 @@ public class Analisis_Live extends javax.swing.JFrame {
         pcap.close();  
     }
     
-    private void mostrarInfo(){
+    private void mostrarInfo(int offset){
         int fila_selec = tableTramas.getSelectedRow();        
-        JPacket pakete = paq.get(fila_selec);         
+        JPacket pakete = paq.get(fila_selec + offset);         
         Aux_Live auxiliar = new Aux_Live(pakete);
         String texto = "";
         String type = "Unknown";
@@ -284,7 +284,7 @@ public class Analisis_Live extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableTramasMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableTramasMousePressed
-        mostrarInfo();
+        mostrarInfo(0);
     }//GEN-LAST:event_tableTramasMousePressed
 
     private void btnCapturarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCapturarActionPerformed
@@ -303,8 +303,10 @@ public class Analisis_Live extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void tableTramasKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableTramasKeyPressed
-        if(evt.getKeyCode()==KeyEvent.VK_DOWN || evt.getKeyCode()==KeyEvent.VK_UP){
-            mostrarInfo();
+        if(evt.getKeyCode()==KeyEvent.VK_DOWN ){
+            mostrarInfo(1);
+        } else if(evt.getKeyCode()==KeyEvent.VK_UP) {
+            mostrarInfo(-1);
         }
     }//GEN-LAST:event_tableTramasKeyPressed
 
